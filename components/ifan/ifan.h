@@ -1,25 +1,34 @@
 #pragma once
 
+#include "esphome/core/automation.h"
 #include "esphome/core/component.h"
-#include "esphome/components/output/binary_output.h"
-#include "esphome/components/output/float_output.h"
 #include "esphome/components/fan/fan.h"
 #include "esphome/components/fan/fan_state.h"
+#include "esphome/components/output/binary_output.h"
+#include "esphome/components/output/float_output.h"
+#include "esphome/components/switch/switch.h"
 #include "esphome/components/uart/uart.h"
-#include "esphome/core/automation.h"
 namespace esphome {
 namespace ifan {
 
 class IFan : public Component, public fan::Fan , public uart::UARTDevice {
- public:
 #define TAG "IFAN"
 
-  IFan() {}
+ public:
+  IFan() : buzzer_enabled_(true), remote_enabled_(true) {}
+
   void setup() override;
   void dump_config() override;
+
   fan::FanTraits get_traits() override;
-  void set_buzzer_enable(bool buzzer_enable) { this->buzzer_enable_ = buzzer_enable; }
-  void set_remote_enable(bool remote_enable) { this->remote_enable_ = remote_enable;};
+
+  // Switch control
+  void set_buzzer_enabled(bool buzzer_enabled) { this->buzzer_enabled_ = buzzer_enabled; }
+  bool get_buzzer_enabled() const { return this->buzzer_enabled_; }
+
+  void set_remote_enabled(bool remote_enabled) { this->remote_enabled_ = remote_enabled; }
+  bool get_remote_enabled() const { return this->remote_enabled_; }
+
   bool state_;
 
  protected:
@@ -34,8 +43,8 @@ class IFan : public Component, public fan::Fan , public uart::UARTDevice {
   void long_beep(int num=1);
   int speed_count_{};
   int current_speed=0;
-  bool buzzer_enable_;
-  bool remote_enable_;
+  bool buzzer_enabled_;
+  bool remote_enabled_;
   // For Remote
 public:
   void loop() override;

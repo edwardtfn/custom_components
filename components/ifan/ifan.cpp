@@ -1,5 +1,4 @@
 #include "ifan.h"
-//#include "esphome/components/fan/fan_helpers.h"
 #include "esphome/core/log.h"
 #include "esphome.h"
 
@@ -13,6 +12,12 @@ namespace ifan {
 int target_fan_speed;
 int start_time_offset;
 void IFan::setup() {
+  ESP_LOGCONFIG(TAG, "Setting up IFan...");
+
+  // Initialize switches with their default values
+  this->set_buzzer_enabled(this->buzzer_enabled_);
+  this->set_remote_enabled(this->remote_enabled_);
+
   pinMode(buzzer, 0x01);
   pinMode(relay_1, 0x01);
   pinMode(relay_2, 0x01);
@@ -26,8 +31,15 @@ void IFan::setup() {
     this->write_state_();
   }
 }
-void IFan::dump_config() { LOG_FAN("", "IFan", this); }
+
+void IFan::dump_config() {
+  ESP_LOGCONFIG(TAG, "IFan:");
+  ESP_LOGCONFIG(TAG, "  Buzzer: %s", this->buzzer_enabled_ ? "ENABLED" : "DISABLED");
+  ESP_LOGCONFIG(TAG, "  Remote: %s", this->remote_enabled_ ? "ENABLED" : "DISABLED");
+}
+
 fan::FanTraits IFan::get_traits() { return fan::FanTraits(false, true, false, 3); }
+
 void IFan::control(const fan::FanCall &call) {
   if (call.get_state().has_value())
     this->state = *call.get_state();
@@ -37,6 +49,7 @@ void IFan::control(const fan::FanCall &call) {
   this->write_state_();
   this->publish_state();
 }
+
 void IFan::write_state_() {
   int local_speed = static_cast<int>(this->speed);
   ESP_LOGD(TAG, "State: %s, Speed: %i ",this->state ? "ON" : "OFF", local_speed);
@@ -66,6 +79,7 @@ void IFan::do_speed(const int lspeed){
         break;
     }
 }
+
 void IFan::set_off() {
   this->state = 0;
   digitalWrite(relay_1, LOW);
@@ -73,18 +87,21 @@ void IFan::set_off() {
   digitalWrite(relay_3, LOW);
   long_beep();
 }
+
 void IFan::set_low() {
   digitalWrite(relay_1, HIGH);
   digitalWrite(relay_2, LOW);
   digitalWrite(relay_3, LOW);
   beep();
 }
+
 void IFan::set_med() {
   digitalWrite(relay_1, LOW);
   digitalWrite(relay_2, HIGH);
   digitalWrite(relay_3, LOW);
   beep(2);
 }
+
 void IFan::set_high() {
   digitalWrite(relay_1, LOW);
   digitalWrite(relay_2, LOW);
@@ -92,6 +109,7 @@ void IFan::set_high() {
 
   beep(3);
 }
+
 void IFan::beep(int num) {
   if (!this->buzzer_enable_)
     return;
@@ -102,6 +120,7 @@ void IFan::beep(int num) {
     delay(50);
   }
 }
+
 void IFan::long_beep(int num) {
   if (!this->buzzer_enable_)
     return;
@@ -114,5 +133,4 @@ void IFan::long_beep(int num) {
 }
 
 }  // namespace ifan
-
 }  // namespace esphome
