@@ -1,8 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import uart
-from esphome.const import CONF_ID
+from esphome.components import fan, uart
 
 DEPENDENCIES = ['uart']
 
@@ -14,8 +13,8 @@ CONF_ON_FAN = "on_fan"
 CONF_ON_LIGHT = "on_light"
 CONF_ON_BUZZER = "on_buzzer"
 
-CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend({
-    cv.GenerateID(): cv.declare_id(IFan04),
+CONFIG_SCHEMA = ({
+    fan.fan_schema(IFan04)
     cv.Optional(CONF_ON_FAN): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_LIGHT): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_BUZZER): automation.validate_automation(single=True),
@@ -23,7 +22,7 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend({
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = await fan.new_fan(config)
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
 
