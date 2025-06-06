@@ -15,9 +15,15 @@ CONF_ON_BUZZER = "on_buzzer"
 
 CONFIG_SCHEMA = (
     fan.fan_schema(IFan04)
-    .extend(cv.Optional(CONF_ON_FAN): automation.validate_automation(single=True))
-    .extend(cv.Optional(CONF_ON_LIGHT): automation.validate_automation(single=True))
-    .extend(cv.Optional(CONF_ON_BUZZER): automation.validate_automation(single=True))
+    .extend({
+        cv.Optional(CONF_ON_FAN): automation.validate_automation(single=True)
+    })
+    .extend({
+        cv.Optional(CONF_ON_LIGHT): automation.validate_automation(single=True)
+    })
+    .extend({
+        cv.Optional(CONF_ON_BUZZER): automation.validate_automation(single=True)
+    })
     .extend(uart.UART_DEVICE_SCHEMA)
 )
 
