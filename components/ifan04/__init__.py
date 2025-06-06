@@ -15,6 +15,7 @@ CONF_ON_BUZZER = "on_buzzer"
 
 # Reverted to the original working schema - cv.COMPONENT_SCHEMA without fan.fan_schema
 CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend({
+    cv.GenerateID(): cv.declare_id(IFan04),  # Add the ID field
     cv.Optional(CONF_ON_FAN): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_LIGHT): automation.validate_automation(single=True),
     cv.Optional(CONF_ON_BUZZER): automation.validate_automation(single=True),
