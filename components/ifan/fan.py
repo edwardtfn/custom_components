@@ -23,7 +23,8 @@ CONFIG_SCHEMA = (
     fan.fan_schema(IFan)
     .extend(cv.Optional(BUZZER_ENABLE, default=True): cv.boolean)
     .extend(cv.Optional(REMOTE_ENABLE, default=True): cv.boolean)
-).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
+    .extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
+)
 FAN_ACTION_SCHEMA = maybe_simple_id(
     {
         cv.Required(CONF_ID): cv.use_id(IFan),
